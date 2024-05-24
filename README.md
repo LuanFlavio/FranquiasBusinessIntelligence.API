@@ -1,0 +1,1 @@
+# Franquias-BusinessIntelligence.API
