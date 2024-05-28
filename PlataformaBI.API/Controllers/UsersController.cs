@@ -60,17 +60,19 @@ namespace PlataformaBI.API.Controllers
             if (Session.usuarioLogado.Perfil != "Administrador")
                 return Unauthorized();
 
-            IUser[] usuarios = _context.User.Where(x => x.Empresa == Session.usuarioLogado.Empresa).ToArray();
+            var usuarios = _context.User
+                .Select(x => new IUserDTO
+                {
+                    Id = x.ID,
+                    Name = x.Nome,
+                    Email = x.Email,
+                    Profile = x.Perfil,
+                    Company = _context.Company.Where(y => y.CNPJ == x.Empresa).FirstOrDefault()
+                })
+                .ToArray();
 
             if (usuarios == null)
-            {
-                return NoContent();
-            }
-
-            foreach (IUser usuario in usuarios)
-            {
-                usuario.Senha = "";
-            }
+                 return NoContent();
 
             return Ok(usuarios);
         }
